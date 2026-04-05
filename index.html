@@ -1,11 +1,761 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
+<head>
     <meta charset="UTF-8">
-    <time>GitとGitHub練習ページ</time>
-  </head>
-  <body>
-    <h1>Gitの初めてのコミットです！</h1>   
-    </h1>
-  </body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>有限会社宮山自動車整形 | ローリー架装・フォークリフト・クレーン整備</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            color: #333;
+            background: #fff;
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        /* ========== ヘッダー ========== */
+        header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #2563eb;
+        }
+
+        .logo-mark {
+            width: 40px;
+            height: 40px;
+            background: #2563eb;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 900;
+            font-size: 1.1rem;
+            letter-spacing: -0.05em;
+        }
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        nav a {
+            color: #555;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        nav a::after {
+            content: "";
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #2563eb;
+            transition: width 0.3s;
+        }
+
+        nav a:hover {
+            color: #2563eb;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .nav-contact {
+            background: #2563eb;
+            color: #fff !important;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .nav-contact::after {
+            display: none;
+        }
+
+        .nav-contact:hover {
+            background: #1d4ed8;
+            color: #fff !important;
+        }
+
+        /* ========== アニメーション ========== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-inner {
+            animation: fadeInUp 1.2s ease-out 0.3s both;
+        }
+
+        .hero-shisa {
+            animation: fadeInUp 1.2s ease-out 0.8s both;
+        }
+
+        /* ========== ヒーロー ========== */
+        .hero {
+            background: #2563eb;
+            position: relative;
+            overflow: hidden;
+            min-height: 520px;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(135deg, rgba(37, 99, 235, 0.95) 0%, rgba(59, 130, 246, 0.9) 50%, rgba(14, 165, 233, 0.85) 100%),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 40px,
+                    rgba(255, 255, 255, 0.04) 40px,
+                    rgba(255, 255, 255, 0.04) 80px
+                );
+        }
+
+        .hero-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 80px 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-label {
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 0.9);
+            padding: 4px 16px;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            border-radius: 2px;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            color: #fff;
+            font-size: 4.2rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            margin-bottom: 24px;
+            line-height: 1.3;
+        }
+
+        .hero-desc {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            max-width: 520px;
+            line-height: 2;
+        }
+
+        .hero-accent {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 40%;
+            max-width: 100%;
+            background: linear-gradient(180deg, rgba(14, 165, 233, 0.3) 0%, rgba(37, 99, 235, 0) 100%);
+            z-index: 0;
+        }
+
+        /* ========== セクション共通 ========== */
+        .section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 100px 24px;
+        }
+
+        .section-header {
+            margin-bottom: 56px;
+        }
+
+        .section-en {
+            font-size: 0.7rem;
+            color: #2563eb;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2563eb;
+            letter-spacing: 0.05em;
+        }
+
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #2563eb, #0ea5e9);
+            margin-top: 16px;
+        }
+
+        /* ========== サービス一覧 ========== */
+        .service-list {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .service-item {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 40px;
+            align-items: center;
+            padding: 60px 0;
+            border-bottom: 2px solid #2563eb;
+        }
+
+        .service-item:first-child {
+            border-top: 2px solid #2563eb;
+        }
+
+        .service-heading {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .service-heading .service-num-text {
+            font-size: 0.85rem;
+            color: #2563eb;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+
+        .service-heading h3 {
+            font-size: 2rem;
+            color: #2563eb;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            line-height: 1.3;
+        }
+
+        .service-desc {
+            font-size: 1.05rem;
+            color: #555;
+            line-height: 2;
+        }
+
+        .service-visual {
+            background: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            min-height: 220px;
+            transition: transform 0.4s ease;
+        }
+
+        .service-visual:hover {
+            transform: scale(1.05);
+        }
+
+        .service-item:nth-child(1) .service-visual { background: linear-gradient(135deg, #e8ecf1 0%, #d5dce6 100%); }
+        .service-item:nth-child(2) .service-visual { background: linear-gradient(135deg, #eae8f1 0%, #d5d6e6 100%); }
+        .service-item:nth-child(3) .service-visual { background: linear-gradient(135deg, #e8f1ee 0%, #d5e6de 100%); }
+        .service-item:nth-child(4) .service-visual { background: linear-gradient(135deg, #f1ece8 0%, #e6ddd5 100%); }
+        .service-item:nth-child(5) .service-visual { background: linear-gradient(135deg, #e8edf1 0%, #d5dee6 100%); }
+
+        .service-icon {
+            font-size: 4rem;
+            opacity: 0.7;
+        }
+
+        .service-photo-label {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            font-size: 0.7rem;
+            color: #999;
+            letter-spacing: 0.1em;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 4px 10px;
+            border-radius: 3px;
+        }
+
+        /* ========== 会社概要 ========== */
+        .about-bg {
+            background: #f7f8fa;
+        }
+
+        .about-table {
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .about-table tr {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .about-table th,
+        .about-table td {
+            padding: 18px 0;
+            font-size: 0.9rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .about-table th {
+            width: 140px;
+            color: #2563eb;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .about-table td {
+            color: #555;
+        }
+
+        /* ========== アクセス（地図） ========== */
+        .map-wrapper {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .map-wrapper iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+            display: block;
+        }
+
+        /* ========== お問い合わせ ========== */
+        .contact-section {
+            background: #2563eb;
+            color: #fff;
+            text-align: center;
+            padding: 80px 24px;
+        }
+
+        .contact-section .section-en {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .contact-section .section-title {
+            color: #fff;
+        }
+
+        .contact-section .section-title::after {
+            background: rgba(255, 255, 255, 0.4);
+            margin: 16px auto 0;
+        }
+
+        .contact-section .section-header {
+            margin-bottom: 32px;
+        }
+
+        .contact-tel {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .contact-tel-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 0.1em;
+            margin-bottom: 4px;
+        }
+
+        .contact-hours {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* ========== フッター ========== */
+        footer {
+            background: #1e40af;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 40px 24px;
+        }
+
+        .footer-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 0.08em;
+        }
+
+        .footer-copy {
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* ========== ハンバーガー (モバイル) ========== */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: #2563eb;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        /* ========== シーサー装飾 ========== */
+        .shisa {
+            display: inline-block;
+        }
+
+        .shisa svg {
+            width: 60px;
+            height: 60px;
+        }
+
+        .hero-shisa {
+            position: absolute;
+            bottom: 30px;
+            right: 60px;
+            z-index: 1;
+        }
+
+        .hero-shisa img {
+            width: 160px;
+            height: auto;
+        }
+
+        .section-shisa {
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 12px;
+        }
+
+        .section-shisa svg {
+            width: 36px;
+            height: 36px;
+        }
+
+        .footer-shisa {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 12px;
+        }
+
+        .footer-shisa svg {
+            width: 40px;
+            height: 40px;
+            opacity: 0.5;
+        }
+
+        /* ========== レスポンシブ ========== */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.4rem;
+            }
+
+            .hero-inner {
+                padding: 60px 24px;
+            }
+
+            .hero {
+                min-height: auto;
+            }
+
+            .service-item {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 40px 0;
+            }
+
+            .service-heading h3 {
+                font-size: 1.5rem;
+            }
+
+            .service-visual {
+                min-height: 200px;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .about-table th {
+                width: 100px;
+            }
+
+            .contact-tel {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header>
+    <div class="header-inner">
+        <a href="#" class="logo">
+            <div class="logo-mark">宮</div>
+            <span class="logo-text">宮山自動車整形</span>
+        </a>
+        <nav>
+            <a href="#services">事業内容</a>
+            <a href="#about">会社概要</a>
+            <a href="#access">アクセス</a>
+            <a href="#contact" class="nav-contact">お問い合わせ</a>
+        </nav>
+        <button class="hamburger" aria-label="メニュー">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</header>
+
+<!-- ヒーロー -->
+<div class="hero">
+    <div class="hero-accent"></div>
+    <div class="hero-inner">
+        <h1>技術で届ける、<br>安心と安全。</h1>
+        <p class="hero-desc">車検整備からローリー架装、フォークリフト・クレーンの点検整備まで。幅広い対応力で、お客様の事業を支えます。</p>
+    </div>
+    <!-- ヒーロー右下のシーサー -->
+    <div class="hero-shisa">
+        <img src="shisa.png" alt="シーサー">
+    </div>
+</div>
+
+<!-- 事業内容 -->
+<div id="services">
+    <div class="section">
+        <div class="section-header">
+            <p class="section-en">Service</p>
+            <h2 class="section-title">事業内容</h2>
+        </div>
+    </div>
+
+    <div class="service-list">
+        <!-- 01 車検整備 -->
+        <div class="service-item">
+            <div class="service-heading">
+                <span class="service-num-text">01</span>
+                <h3>車検整備</h3>
+            </div>
+            <p class="service-desc">自動車の車検・定期点検・一般整備を行っています。お車の安全を確保し、安心してお乗りいただけるよう丁寧に整備いたします。</p>
+            <div class="service-visual">
+                <span class="service-icon">🚗</span>
+                <span class="service-photo-label">PHOTO</span>
+            </div>
+        </div>
+
+        <!-- 02 ローリー載せ替え -->
+        <div class="service-item">
+            <div class="service-heading">
+                <span class="service-num-text">02</span>
+                <h3>ローリー<br>載せ替え</h3>
+            </div>
+            <p class="service-desc">タンクローリーの新規架装および載せ替えを行っています。お客様のご要望・用途に合わせた仕様で、安全かつ確実に対応いたします。</p>
+            <div class="service-visual">
+                <span class="service-icon">🚛</span>
+                <span class="service-photo-label">PHOTO</span>
+            </div>
+        </div>
+
+        <!-- 03 フォークリフトの点検整備 -->
+        <div class="service-item">
+            <div class="service-heading">
+                <span class="service-num-text">03</span>
+                <h3>フォークリフトの<br>点検整備</h3>
+            </div>
+            <p class="service-desc">フォークリフトの定期点検・整備を実施しています。法定点検から日常のメンテナンスまで、安全な稼働をサポートいたします。</p>
+            <div class="service-visual">
+                <span class="service-icon">🔧</span>
+                <span class="service-photo-label">PHOTO</span>
+            </div>
+        </div>
+
+        <!-- 04 フォークリフトのレンタル -->
+        <div class="service-item">
+            <div class="service-heading">
+                <span class="service-num-text">04</span>
+                <h3>フォークリフトの<br>レンタル</h3>
+            </div>
+            <p class="service-desc">必要な期間だけご利用いただけるフォークリフトのレンタルサービスです。短期から長期まで、お客様の状況に合わせて柔軟に対応いたします。</p>
+            <div class="service-visual">
+                <span class="service-icon">📋</span>
+                <span class="service-photo-label">PHOTO</span>
+            </div>
+        </div>
+
+        <!-- 05 クレーン点検整備 -->
+        <div class="service-item">
+            <div class="service-heading">
+                <span class="service-num-text">05</span>
+                <h3>クレーン<br>点検整備</h3>
+            </div>
+            <p class="service-desc">各種クレーンの定期点検・整備を行っています。安全な作業環境の維持と、設備の長寿命化をお手伝いいたします。</p>
+            <div class="service-visual">
+                <span class="service-icon">🏗️</span>
+                <span class="service-photo-label">PHOTO</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 会社概要 -->
+<div class="about-bg" id="about">
+    <div class="section">
+        <div class="section-header">
+            <p class="section-en">Company</p>
+            <h2 class="section-title">会社概要</h2>
+        </div>
+        <table class="about-table">
+            <tr>
+                <th>会社名</th>
+                <td>有限会社宮山自動車整形</td>
+            </tr>
+            <tr>
+                <th>代表取締役</th>
+                <td>宮山茂雄</td>
+            </tr>
+            <tr>
+                <th>所在地</th>
+                <td>〒690-0024 島根県松江市馬潟町331-1</td>
+            </tr>
+            <tr>
+                <th>電話番号</th>
+                <td>0852-37-1341</td>
+            </tr>
+            <tr>
+                <th>FAX</th>
+                <td>0852-37-2746</td>
+            </tr>
+            <tr>
+                <th>事業内容</th>
+                <td>車検整備<br>ローリー新規架装・載せ替え<br>フォークリフト点検整備・レンタル<br>クレーン点検整備</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<!-- アクセス -->
+<div id="access">
+    <div class="section">
+        <div class="section-header">
+            <p class="section-en">Access</p>
+            <h2 class="section-title">アクセス</h2>
+        </div>
+        <p style="font-size: 0.9rem; color: #555; margin-bottom: 24px;">〒690-0024 島根県松江市馬潟町331-1</p>
+    </div>
+    <div class="map-wrapper">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3236.!2d133.095!3d35.44!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z5bO25qC555yM5p2-5rGf5biC6aas5r2f55S6MzMxLTE!5e0!3m2!1sja!2sjp!4v1" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+</div>
+
+<!-- お問い合わせ -->
+<div class="contact-section" id="contact">
+    <div class="section-header">
+        <p class="section-en">Contact</p>
+        <h2 class="section-title">お問い合わせ</h2>
+    </div>
+    <p class="contact-tel-label">お電話でのお問い合わせ</p>
+    <p class="contact-tel">0852-37-1341</p>
+    <p class="contact-hours">受付時間：平日 8:00〜17:00</p>
+</div>
+
+<!-- フッター -->
+<footer>
+    <div class="footer-inner">
+        <div class="footer-logo">有限会社宮山自動車整形</div>
+        <div class="footer-copy">&copy; 2026 有限会社宮山自動車整形 All Rights Reserved.</div>
+    </div>
+</footer>
+
+</body>
 </html>
