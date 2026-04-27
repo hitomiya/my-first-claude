@@ -756,6 +756,313 @@
         <div class="footer-copy">&copy; 2026 有限会社宮山自動車整形 All Rights Reserved.</div>
     </div>
 </footer>
+<!-- ========== AIチャットボット（クライアントサイド） ========== -->
+<style>
+    #api-key-modal {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+        display: flex; align-items: center; justify-content: center; z-index: 2000;
+    }
+    #api-key-modal.hidden { display: none; }
+    #api-key-box {
+        background: #fff; border-radius: 12px; padding: 32px;
+        width: 90%; max-width: 420px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    #api-key-box h3 { margin: 0 0 8px; font-size: 1.1rem; color: #1e293b; }
+    #api-key-box p { margin: 0 0 16px; font-size: 0.85rem; color: #64748b; line-height: 1.5; }
+    #api-key-box a { color: #2563eb; }
+    #api-key-input {
+        width: 100%; box-sizing: border-box; border: 1px solid #cbd5e1;
+        border-radius: 6px; padding: 10px 12px; font-size: 0.85rem;
+        font-family: monospace; margin-bottom: 8px; outline: none;
+    }
+    #api-key-input:focus { border-color: #2563eb; }
+    #api-key-error { color: #ef4444; font-size: 0.78rem; margin-bottom: 12px; min-height: 18px; }
+    #api-key-save {
+        width: 100%; background: #2563eb; color: #fff; border: none;
+        border-radius: 6px; padding: 10px; font-size: 0.95rem; cursor: pointer;
+    }
+    #api-key-save:hover { background: #1d4ed8; }
+
+    #chat-toggle {
+        position: fixed; bottom: 28px; right: 28px; width: 60px; height: 60px;
+        border-radius: 50%; background: #ea580c; border: none; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 16px rgba(234,88,12,0.45); z-index: 9999;
+        transition: background 0.2s, transform 0.2s;
+    }
+    #chat-toggle:hover { background: #c2410c; transform: scale(1.06); }
+    #chat-toggle svg { width: 28px; height: 28px; fill: #fff; }
+    #chat-badge {
+        position: absolute; top: 2px; right: 2px; width: 14px; height: 14px;
+        border-radius: 50%; background: #ef4444; border: 2px solid #fff; display: none;
+    }
+
+    #chat-window {
+        position: fixed; bottom: 100px; right: 28px; width: 360px; height: 480px;
+        background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        display: flex; flex-direction: column; z-index: 9998; overflow: hidden;
+        transition: opacity 0.2s, transform 0.2s;
+    }
+    #chat-window.hidden { opacity: 0; pointer-events: none; transform: translateY(12px); }
+
+    #chat-header {
+        background: #2563eb; color: #fff; padding: 14px 16px; font-size: 0.95rem;
+        font-weight: 600; display: flex; align-items: center;
+        justify-content: space-between; flex-shrink: 0;
+    }
+    #chat-header-title { display: flex; align-items: center; gap: 8px; }
+    #chat-header-title svg { width: 18px; height: 18px; fill: #fff; }
+    #chat-header-actions { display: flex; gap: 6px; }
+    .chat-header-btn {
+        background: none; border: none; color: #fff; cursor: pointer;
+        padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; opacity: 0.8;
+    }
+    .chat-header-btn:hover { opacity: 1; background: rgba(255,255,255,0.15); }
+
+    #chat-messages {
+        flex: 1; overflow-y: auto; padding: 16px;
+        display: flex; flex-direction: column; gap: 12px;
+    }
+    .chat-bubble {
+        max-width: 82%; padding: 10px 14px; border-radius: 16px;
+        font-size: 0.875rem; line-height: 1.5; word-break: break-word; white-space: pre-wrap;
+    }
+    .chat-bubble.user {
+        align-self: flex-end; background: #2563eb; color: #fff; border-bottom-right-radius: 4px;
+    }
+    .chat-bubble.assistant {
+        align-self: flex-start; background: #f1f5f9; color: #1e293b; border-bottom-left-radius: 4px;
+    }
+    .typing-indicator {
+        display: flex; gap: 4px; align-items: center; padding: 10px 14px;
+        align-self: flex-start; background: #f1f5f9; border-radius: 16px; border-bottom-left-radius: 4px;
+    }
+    .typing-dot {
+        width: 8px; height: 8px; border-radius: 50%; background: #94a3b8;
+        animation: typing-bounce 1.2s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing-bounce {
+        0%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-6px); }
+    }
+
+    #chat-input-area {
+        border-top: 1px solid #e2e8f0; padding: 12px;
+        display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0;
+    }
+    #chat-input {
+        flex: 1; border: 1px solid #cbd5e1; border-radius: 10px; padding: 8px 12px;
+        font-size: 0.875rem; resize: none; outline: none; height: 40px;
+        max-height: 80px; font-family: inherit; line-height: 1.5;
+    }
+    #chat-input:focus { border-color: #2563eb; }
+    #chat-send {
+        width: 38px; height: 38px; border-radius: 50%; background: #2563eb;
+        border: none; cursor: pointer; display: flex; align-items: center;
+        justify-content: center; flex-shrink: 0;
+    }
+    #chat-send:hover { background: #1d4ed8; }
+    #chat-send:disabled { background: #94a3b8; cursor: not-allowed; }
+    #chat-send svg { width: 18px; height: 18px; fill: #fff; }
+
+    @media (max-width: 400px) {
+        #chat-window { width: calc(100vw - 24px); right: 12px; }
+        #chat-toggle { right: 16px; bottom: 20px; }
+    }
+</style>
+
+<!-- APIキー入力モーダル -->
+<div id="api-key-modal" class="hidden">
+    <div id="api-key-box">
+        <h3>Anthropic API キーの設定</h3>
+        <p>AIチャットボットを利用するには Anthropic の API キーが必要です。<br>
+        キーは <a href="https://console.anthropic.com/" target="_blank" rel="noopener">console.anthropic.com</a> で取得できます。<br>
+        入力したキーはお使いのブラウザにのみ保存されます。</p>
+        <input id="api-key-input" type="password" placeholder="sk-ant-..." autocomplete="off" />
+        <div id="api-key-error"></div>
+        <button id="api-key-save">保存して始める</button>
+    </div>
+</div>
+
+<!-- チャットボタン -->
+<button id="chat-toggle" aria-label="AIアシスタントを開く">
+    <svg viewBox="0 0 24 24"><path d="M20 2H4a2 2 0 00-2 2v18l4-4h14a2 2 0 002-2V4a2 2 0 00-2-2z"/></svg>
+    <span id="chat-badge"></span>
+</button>
+
+<!-- チャットウィンドウ -->
+<div id="chat-window" class="hidden" role="dialog">
+    <div id="chat-header">
+        <div id="chat-header-title">
+            <svg viewBox="0 0 24 24"><path d="M20 2H4a2 2 0 00-2 2v18l4-4h14a2 2 0 002-2V4a2 2 0 00-2-2z"/></svg>
+            AIアシスタント
+        </div>
+        <div id="chat-header-actions">
+            <button class="chat-header-btn" id="chat-reset-key">🔑 キー変更</button>
+            <button class="chat-header-btn" id="chat-close">✕</button>
+        </div>
+    </div>
+    <div id="chat-messages"></div>
+    <div id="chat-input-area">
+        <textarea id="chat-input" placeholder="メッセージを入力..." rows="1" maxlength="500"></textarea>
+        <button id="chat-send" aria-label="送信">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+    </div>
+</div>
+
+<script>
+(function () {
+    const STORAGE_KEY = "miyayama_anthropic_api_key";
+    const API_URL     = "https://api.anthropic.com/v1/messages";
+    const MODEL       = "claude-haiku-4-5";
+    const SYSTEM_PROMPT = `あなたは「有限会社宮山自動車整形」のウェブサイトに設置された AIアシスタントです。
+丁寧で親切な対応を心がけ、お客様のご質問にお答えください。
+
+【会社情報】
+- 会社名: 有限会社宮山自動車整形
+- 代表取締役: 宮山茂雄
+- 所在地: 〒690-0024 島根県松江市馬潟町331-1
+- 電話番号: 0852-37-1341
+- FAX: 0852-37-2746
+- 受付時間: 平日 8:00〜17:00
+
+【事業内容】
+1. 車検整備 – 自動車の車検・定期点検・一般整備
+2. ローリー新規架装・載せ替え – タンクローリーの新規架装および載せ替え
+3. フォークリフト点検整備 – 定期点検から日常メンテナンスまで
+4. フォークリフトレンタル – 短期〜長期、柔軟に対応
+5. クレーン点検整備 – 各種クレーンの定期点検・整備
+
+【対応ガイドライン】
+- 具体的な料金・納期はケースバイケースのため「お電話でご確認ください」と案内してください。
+- 回答はできるだけ簡潔に、必要に応じて電話番号（0852-37-1341）を案内してください。
+- 当社のサービス範囲外の質問には、「専門外のため詳しくはお電話でご相談ください」とお伝えください。
+- 日本語でお答えください。`;
+
+    const modal    = document.getElementById("api-key-modal");
+    const keyInput = document.getElementById("api-key-input");
+    const keyError = document.getElementById("api-key-error");
+    const keySave  = document.getElementById("api-key-save");
+    const toggle   = document.getElementById("chat-toggle");
+    const badge    = document.getElementById("chat-badge");
+    const chatWin  = document.getElementById("chat-window");
+    const msgArea  = document.getElementById("chat-messages");
+    const input    = document.getElementById("chat-input");
+    const sendBtn  = document.getElementById("chat-send");
+    const closeBtn = document.getElementById("chat-close");
+    const resetKey = document.getElementById("chat-reset-key");
+
+    let history = [], isOpen = false, sending = false;
+
+    function getKey()   { return localStorage.getItem(STORAGE_KEY); }
+    function saveKey(k) { localStorage.setItem(STORAGE_KEY, k); }
+    function clearKey() { localStorage.removeItem(STORAGE_KEY); }
+
+    function showModal() {
+        keyInput.value = ""; keyError.textContent = "";
+        modal.classList.remove("hidden");
+        setTimeout(() => keyInput.focus(), 50);
+    }
+    function hideModal() { modal.classList.add("hidden"); }
+
+    keySave.addEventListener("click", () => {
+        const val = keyInput.value.trim();
+        if (!val.startsWith("sk-ant-")) {
+            keyError.textContent = "「sk-ant-」で始まるキーを入力してください。";
+            return;
+        }
+        saveKey(val); hideModal(); openChat();
+    });
+    keyInput.addEventListener("keydown", e => { if (e.key === "Enter") keySave.click(); });
+
+    function openChat() {
+        isOpen = true; chatWin.classList.remove("hidden");
+        badge.style.display = "none";
+        if (history.length === 0) appendBubble("assistant", "こんにちは！有限会社宮山自動車整形のAIアシスタントです。\n車検・整備・フォークリフト・クレーンなど、お気軽にご質問ください。");
+        input.focus();
+    }
+    function closeChat() { isOpen = false; chatWin.classList.add("hidden"); }
+
+    toggle.addEventListener("click", () => {
+        if (isOpen) { closeChat(); return; }
+        if (!getKey()) { showModal(); return; }
+        openChat();
+    });
+    closeBtn.addEventListener("click", closeChat);
+    resetKey.addEventListener("click", () => { clearKey(); closeChat(); showModal(); });
+
+    function appendBubble(role, text) {
+        const div = document.createElement("div");
+        div.className = "chat-bubble " + role;
+        div.textContent = text;
+        msgArea.appendChild(div);
+        msgArea.scrollTop = msgArea.scrollHeight;
+    }
+
+    function showTyping() {
+        const wrap = document.createElement("div");
+        wrap.className = "typing-indicator"; wrap.id = "typing";
+        for (let i = 0; i < 3; i++) {
+            const d = document.createElement("div"); d.className = "typing-dot"; wrap.appendChild(d);
+        }
+        msgArea.appendChild(wrap); msgArea.scrollTop = msgArea.scrollHeight;
+    }
+    function hideTyping() { const el = document.getElementById("typing"); if (el) el.remove(); }
+
+    async function sendMessage() {
+        const text = input.value.trim();
+        if (!text || sending) return;
+        const apiKey = getKey();
+        if (!apiKey) { showModal(); return; }
+
+        sending = true; sendBtn.disabled = true;
+        history.push({ role: "user", content: text });
+        appendBubble("user", text);
+        input.value = ""; input.style.height = "40px";
+        showTyping();
+
+        try {
+            const res = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-api-key": apiKey,
+                    "anthropic-version": "2023-06-01",
+                    "anthropic-dangerous-request-origin": "user-provided-key",
+                },
+                body: JSON.stringify({ model: MODEL, max_tokens: 1024, system: SYSTEM_PROMPT, messages: history }),
+            });
+            hideTyping();
+            if (!res.ok) {
+                if (res.status === 401) { clearKey(); appendBubble("assistant", "APIキーが無効です。「キー変更」から正しいキーを入力してください。"); }
+                else if (res.status === 429) { appendBubble("assistant", "リクエストが多すぎます。しばらくしてからお試しください。"); }
+                else { appendBubble("assistant", "エラーが発生しました。しばらくしてからお試しください。"); }
+                history.pop();
+            } else {
+                const data = await res.json();
+                const reply = data.content?.find(b => b.type === "text")?.text ?? "";
+                history.push({ role: "assistant", content: reply });
+                appendBubble("assistant", reply);
+            }
+        } catch {
+            hideTyping();
+            appendBubble("assistant", "通信エラーが発生しました。ネットワーク接続をご確認ください。");
+            history.pop();
+        }
+        sending = false; sendBtn.disabled = false; input.focus();
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+    input.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+    input.addEventListener("input", () => { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 80) + "px"; });
+
+    if (!getKey()) badge.style.display = "block";
+})();
+</script>
+
 
 </body>
 </html>
